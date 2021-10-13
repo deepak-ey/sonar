@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: ankita
@@ -11,11 +12,12 @@ namespace Neosoft\CustomPayment\Model\Payment;
 use Magento\Directory\Helper\Data as DirectoryHelper;
 use Magento\Payment\Model\Method\Logger;
 use Neosoft\CustomPayment\Model\Source\CustomDropdown;
+
 /**
  * Pay In Store payment method model
  */
-class Simple extends \Magento\Payment\Model\Method\AbstractMethod
-{
+class Simple extends \Magento\Payment\Model\Method\AbstractMethod {
+
     /**
      * Payment code
      *
@@ -36,36 +38,32 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
     /**
      * @var \Magento\Catalog\Model\ProductFactory
      */
-
     protected $productFactory;
 
     /**
      * @var \Neosoft\CustomPayment\Model\Source\CustomDropdown
      */
-
     protected $customDropdown;
 
-
     const XML_PATH_ALLOWED_CUSTOMER_GROUP = 'payment/simple/customergroup';
-
     const DROPDOWN_ATTRIBUTE_CODE = 'custom_dropdown';
 
     public function __construct(\Magento\Framework\Model\Context $context,
-                                \Magento\Framework\Registry $registry,
-                                \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-                                \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-                                \Magento\Payment\Helper\Data $paymentData,
-                                \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-                                Logger $logger,
-                                \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-                                \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-                                array $data = [],
-                                DirectoryHelper $directory = null,
-                                \Magento\Customer\Model\Session $customerSession,
-                                \Magento\Checkout\Model\Session $checkoutSession,
-                                \Magento\Catalog\Model\ProductFactory $productFactory,
-                                CustomDropdown $customDropdown)
-    {
+            \Magento\Framework\Registry $registry,
+            \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+            \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+            \Magento\Payment\Helper\Data $paymentData,
+            \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+            Logger $logger,
+            \Magento\Customer\Model\Session $customerSession,
+            \Magento\Checkout\Model\Session $checkoutSession,
+            \Magento\Catalog\Model\ProductFactory $productFactory,
+            CustomDropdown $customDropdown,
+            \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+            \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+            array $data = [],
+            DirectoryHelper $directory = null
+    ) {
         $this->_customerSession = $customerSession;
         $this->checkoutSession = $checkoutSession;
         $this->productFactory = $productFactory;
@@ -80,10 +78,8 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      * @return bool
      *
      */
-
-    public function isActive($storeId = null)
-    {
-        return (bool)(int)$this->isCustomerAllowed($storeId);
+    public function isActive($storeId = null) {
+        return (bool) (int) $this->isCustomerAllowed($storeId);
     }
 
     /**
@@ -92,10 +88,8 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      * @return string
      *
      */
-
-    public function getTitle()
-    {
-        if($this->getPaymentMethodCustomTitle() && $this->getPaymentMethodCustomTitle() != CustomDropdown::EMPTY_VALUE_LABEL) {
+    public function getTitle() {
+        if ($this->getPaymentMethodCustomTitle() && $this->getPaymentMethodCustomTitle() != CustomDropdown::EMPTY_VALUE_LABEL) {
             return $this->getPaymentMethodCustomTitle();
         }
         return $this->getConfigData('title');
@@ -106,11 +100,9 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @return int
      */
-
-
-    public function getCustomerGroupId(){
-        if($this->_customerSession->isLoggedIn()):
-            return $customerGroup=$this->_customerSession->getCustomer()->getGroupId();
+    public function getCustomerGroupId() {
+        if ($this->_customerSession->isLoggedIn()):
+            return $this->_customerSession->getCustomer()->getGroupId();
         endif;
         return 0;
     }
@@ -122,17 +114,15 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      * @return bool
      *
      */
-
-    public function isCustomerAllowed($storeId = null){
+    public function isCustomerAllowed($storeId = null) {
         $customerGroupId = $this->getCustomerGroupId();
-            $allowedCustomer = $this->_scopeConfig->getValue(self::XML_PATH_ALLOWED_CUSTOMER_GROUP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
-            $allowedCustomer = explode(',',$allowedCustomer);
-            if(in_array($customerGroupId,$allowedCustomer)){
-                return true;
-            }
+        $allowedCustomer = $this->_scopeConfig->getValue(self::XML_PATH_ALLOWED_CUSTOMER_GROUP, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+        $allowedCustomer = explode(',', $allowedCustomer);
+        if (in_array($customerGroupId, $allowedCustomer)) {
+            return true;
+        }
         return false;
     }
-
 
     /**
      * Get Payment Method Title According to Product Attribute value
@@ -140,11 +130,11 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      * @return string
      *
      */
-    public function getPaymentMethodCustomTitle(){
+    public function getPaymentMethodCustomTitle() {
         $attrValue = $this->getHigestAttributeValue();
         $options = $this->getAllOptions();
-        foreach ($options as $option){
-            if($option['value'] == $attrValue){
+        foreach ($options as $option) {
+            if ($option['value'] == $attrValue) {
                 return $option['label'];
             }
         }
@@ -156,8 +146,7 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @return \Magento\Quote\Model\Quote
      */
-    public function getQuoteData()
-    {
+    public function getQuoteData() {
         return $this->checkoutSession->getQuote();
     }
 
@@ -166,17 +155,14 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      *
      * @return array
      */
-
-    public function getAllQuoteProducts()
-    {
-        $quote =  $this->getQuoteData();
+    public function getAllQuoteProducts() {
+        $quote = $this->getQuoteData();
         $allItems = $quote->getAllVisibleItems();
         $productIds = [];
         foreach ($allItems as $item) {
             $productIds[] = $item->getProductId();
         }
         return $productIds;
-
     }
 
     /**
@@ -185,17 +171,15 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      * @return int
      *
      */
-
-    public function getHigestAttributeValue(){
+    public function getHigestAttributeValue() {
         $productIds = $this->getAllQuoteProducts();
         $attrValue = [];
-        foreach ($productIds as $productId){
+        foreach ($productIds as $productId) {
             $product = $this->productFactory->create()->load($productId);
             $attrValue[] = $product->getData(self::DROPDOWN_ATTRIBUTE_CODE);
         }
         return max($attrValue);
     }
-
 
     /**
      * Get All options of Custom Dropdown attribute
@@ -203,9 +187,8 @@ class Simple extends \Magento\Payment\Model\Method\AbstractMethod
      * @return array
      *
      */
-    public function getAllOptions(){
+    public function getAllOptions() {
         return $this->customDropdown->getAllOptions();
     }
-
 
 }
